@@ -1,6 +1,8 @@
 package com.example.sunnyweather.android.ui.place
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sunnyweather.R
+import com.example.sunnyweather.android.ui.weather.WeatherActivity
 
 class PlaceFragment:Fragment() {
     val viewModel by lazy {
@@ -39,6 +42,17 @@ class PlaceFragment:Fragment() {
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        viewModel.findAllPlace().observe(viewLifecycleOwner){places->
+            Log.d("PlaceFragment","被调用！！！")
+            if(!places.isNullOrEmpty()){
+                val intent=Intent(context,WeatherActivity::class.java)
+                intent.putExtra("location_lng",places[0].lng)
+                intent.putExtra("location_lat",places[0].lat)
+                intent.putExtra("place_name",places[0].name)
+                startActivity(intent)
+                activity?.finish()
+            }
+        }
         val layoutManager=LinearLayoutManager(activity)
         adapter= PlaceAdapter(this,viewModel.placeList)
         recyclerView.layoutManager=layoutManager
